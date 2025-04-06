@@ -69,7 +69,7 @@ namespace HomeWork45
                 Использовать для этого симметричный обход дерева.*/
             if (Node.Left is not null)
                 SymmetricTraversal((TreeNodeEmployee)Node.Left);
-            Console.WriteLine($"{Node.Name}={Node.Value}");
+            Console.WriteLine($"{Node.Name} = {Node.Value}");
             if (Node.Right is not null)
                 SymmetricTraversal((TreeNodeEmployee)Node.Right);
         }
@@ -93,11 +93,12 @@ namespace HomeWork45
             }
         }
 
-        static TreeNodeEmployee FindEmployeeBySalary(int Salary)
+        static TreeNodeEmployee FindEmployeeBySalary(int Salary, ref int Count_)
         {
             var node = root;
             while (node != null)
             {
+                Count_++;
                 if (node.Value == Salary)
                     return node;
                 if (Salary < node.Value)
@@ -106,20 +107,6 @@ namespace HomeWork45
                     node = (TreeNodeEmployee)node.Right;
             }
             return null;
-        }
-
-        static void MainUserCycle()
-        {
-            /*после этого программа предлагает ввести цифру 0(переход к началу программы) или 1(снова поиск зарплаты).
-                При вводе 0 должен произойти переход к началу работы программы, т.е.опять запрашивается список сотрудников 
-                и строится новое дерево. При вводе 1 должны снова запросить зарплату, которую хочется поискать в дереве -см.предыдущий пункт.*/
-            var LastUserAnswer = "1";
-            while (LastUserAnswer == "1")
-            {
-                UserFindEmployeeBySalary();
-                Console.WriteLine($"Введите 0 для завершения или 1 для повторного поиска:");
-                LastUserAnswer = Console.ReadLine();
-            }
         }
 
         static void UserFindEmployeeBySalary()
@@ -131,35 +118,54 @@ namespace HomeWork45
             Console.WriteLine("Какой размер зп вас интересует?: ");
             var salary = int.Parse(Console.ReadLine());
 
-            var node = FindEmployeeBySalary(salary);
+            var count_ = 0;
+            var node = FindEmployeeBySalary(salary, ref count_);
+            Console.WriteLine($"Проверено узлов {count_}");
             if (node == null)
                 Console.WriteLine("такой сотрудник не найден");
             else
                 Console.WriteLine(node.Name);
         }
 
-        static void AddTestNodes()
+        static void AddRandomNodes()
         {
-            root = CreateNode("ar", 9);
-            TreeAddNode(root, CreateNode("a1", 10));
-            TreeAddNode(root, CreateNode("a2", 2));
-            TreeAddNode(root, CreateNode("a3", 5));
-            TreeAddNode(root, CreateNode("a4", 5));
-            TreeAddNode(root, CreateNode("a5", 43));
-            TreeAddNode(root, CreateNode("a6", 15));
-            TreeAddNode(root, CreateNode("a7", 4));
+            Random r = new Random();
+            for (int i = 10; i < 25; i++)
+            {
+                int rInt = r.Next(10, 99);
+                if (root is null)
+                    root = CreateNode($"Иванов__{i}:)", rInt);
+                else
+                    TreeAddNode(root, CreateNode($"Смирнов_{i}:)", rInt));
+            }
+        }
 
+        static void MainUserCycle()
+        {
+            /*после этого программа предлагает ввести цифру 0(переход к началу программы) или 1(снова поиск зарплаты).
+                При вводе 0 должен произойти переход к началу работы программы, т.е.опять запрашивается список сотрудников 
+                и строится новое дерево. При вводе 1 должны снова запросить зарплату, которую хочется поискать в дереве -см.предыдущий пункт.*/
+            var LastUserAnswer = "1";
+            while (LastUserAnswer == "1")
+            {
+                Console.Clear();
+                root = null;
+
+                /*значения "зашиты" в программу:*/
+                AddRandomNodes();
+                //AddUserNodes();
+
+                SymmetricTraversal(root);
+
+                UserFindEmployeeBySalary();
+                Console.WriteLine($"Введите 0 для завершения или 1 для повторного поиска:");
+                LastUserAnswer = Console.ReadLine();
+            }
         }
 
         static void Main(string[] args)
         {
-            AddUserNodes();
-            //AddTestNodes();
-
-            SymmetricTraversal(root);
-
             MainUserCycle();
-
         }
     }
 }
